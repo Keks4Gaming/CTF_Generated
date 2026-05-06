@@ -43,5 +43,8 @@
 	},
 	"keywords": [
 		"svelte"
-	]
+	],
+	"dependencies": {
+		"@sveltejs/adapter-node": "^5.5.4"
+	}
 }

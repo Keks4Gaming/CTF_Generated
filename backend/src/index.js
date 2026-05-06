@@ -4,9 +4,11 @@ const mariadb = require('mariadb');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const port = 3000;
+const port = 7401;
+const HOST = '0.0.0.0';
 
-const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
+const corsOriginEnv = process.env.CORS_ORIGIN || '';
+const corsOrigins = (corsOriginEnv || 'http://localhost:3000,http://127.0.0.1:3000')
 	.split(',')
 	.map((origin) => origin.trim())
 	.filter(Boolean);
@@ -21,9 +23,34 @@ const pool = mariadb.createPool({
 	database: 'pwnbox'
 });
 
+const isAllowedOrigin = (origin) => {
+	if (!origin) {
+		return true;
+	}
+
+	if (corsOrigins.includes('*')) {
+		return true;
+	}
+
+	if (corsOrigins.includes(origin)) {
+		return true;
+	}
+
+	if (!corsOriginEnv) {
+		try {
+			const url = new URL(origin);
+			return url.port === '3000';
+		} catch (err) {
+			return false;
+		}
+	}
+
+	return false;
+};
+
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || corsOrigins.includes(origin)) {
+		if (isAllowedOrigin(origin)) {
 			return callback(null, true);
 		}
 
@@ -167,6 +194,6 @@ app.post("/api/admin/cmd", requireAuth, requireAdmin, async (req, res) => {
 	}
 });
 
-app.listen(port, () => {
+app.listen(port, HOST, () => {
   console.log(`Server is running on port ${port}`);
 });

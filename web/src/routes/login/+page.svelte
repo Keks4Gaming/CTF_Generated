@@ -23,7 +23,8 @@
 		loading = true;
 
 		try {
-			const response = await fetch("http://localhost:3000/api/login", {
+			const apiBase = import.meta.env.VITE_API_BASE || `http://${window.location.hostname}:7401`;
+			const response = await fetch(`${apiBase}/api/login`, {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
