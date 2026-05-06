@@ -1,0 +1,7 @@
+**/node_modules
+**/.svelte-kit
+web/build
+backend/src/*.log
+.env
+.git
+.vscode
