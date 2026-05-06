@@ -24,7 +24,8 @@
 </main>
 
 <footer class="site-footer">
-	<p>Minimal words, maximum signal. Built with SvelteKit.</p>
+    <p>Made by Nico Reichstein && Marco Haberstroh</p>
+    <p>Minimal words, maximum signal. Built with SvelteKit.</p>
 </footer>
 
 <style>

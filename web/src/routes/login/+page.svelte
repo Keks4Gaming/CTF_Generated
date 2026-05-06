@@ -144,6 +144,37 @@
 		gap: 16px;
 	}
 
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px 20px;
+		border-radius: 999px;
+		font: inherit;
+		font-weight: 600;
+		border: 1px solid transparent;
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+	}
+
+	.button.solid {
+		background: var(--accent);
+		color: white;
+		box-shadow: 0 12px 26px rgba(11, 107, 87, 0.2);
+	}
+
+	.button.solid:hover:not(:disabled) {
+		transform: translateY(-1px);
+		background: var(--accent-dark);
+	}
+
+	.button:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+		box-shadow: none;
+	}
+
 	.login-card h2 {
 		margin: 0;
 		font-family: "Fraunces", "Times New Roman", serif;
