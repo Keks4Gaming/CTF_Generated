@@ -18,19 +18,28 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Backend Dependencies
+# Backend
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
+COPY backend/src ./src
 
-# Backend Source
-COPY backend/ ./
+# Frontend runtime
+WORKDIR /app/web
+COPY web/package*.json ./
+RUN npm ci --omit=dev
 
-# SvelteKit Build Output → build/
+WORKDIR /app
+
+# SvelteKit Build Output
 COPY --from=frontend-builder /app/web/build ./web/build
-COPY --from=frontend-builder /app/web/static ./web/static
+
+# Startscript
+COPY start.sh ./
+RUN chmod +x start.sh
 
 EXPOSE 3000
+EXPOSE 7401
 
 ENV NODE_ENV=production
 
-CMD ["node", "src/index.js"]
+CMD ["sh", "start.sh"]
