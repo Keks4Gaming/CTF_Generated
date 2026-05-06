@@ -15,10 +15,11 @@ const tokenName = 'auth_token';
 const tokenMaxAgeMs = 60 * 60 * 1000;
 
 const pool = mariadb.createPool({
-	host: 'localhost',
-	user: 'root',
-	password: '1234',
-	database: 'pwnbox'
+    host: '127.0.0.1',
+    user: 'root',
+    password: '1234',
+    database: 'pwnbox',
+    port: 3306
 });
 
 const corsOptions = {
