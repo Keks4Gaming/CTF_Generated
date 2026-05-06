@@ -7,11 +7,9 @@ const app = express();
 const port = 7401;
 const HOST = '0.0.0.0';
 
-const corsOriginEnv = process.env.CORS_ORIGIN || '';
-const corsOrigins = (corsOriginEnv || 'http://localhost:3000,http://127.0.0.1:3000')
-	.split(',')
-	.map((origin) => origin.trim())
-	.filter(Boolean);
+// Open CORS: allow requests from any Origin (needed when frontend is served from
+// different hosts/ports). Note: with cookies/credentials we must *reflect* the
+// Origin (cannot use '*').
 const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-me';
 const tokenName = 'auth_token';
 const tokenMaxAgeMs = 60 * 60 * 1000;
@@ -23,39 +21,8 @@ const pool = mariadb.createPool({
 	database: 'pwnbox'
 });
 
-const isAllowedOrigin = (origin) => {
-	if (!origin) {
-		return true;
-	}
-
-	if (corsOrigins.includes('*')) {
-		return true;
-	}
-
-	if (corsOrigins.includes(origin)) {
-		return true;
-	}
-
-	if (!corsOriginEnv) {
-		try {
-			const url = new URL(origin);
-			return url.port === '3000';
-		} catch (err) {
-			return false;
-		}
-	}
-
-	return false;
-};
-
 const corsOptions = {
-	origin: (origin, callback) => {
-		if (isAllowedOrigin(origin)) {
-			return callback(null, true);
-		}
-
-		return callback(new Error('Origin not allowed by CORS'));
-	},
+	origin: true,
 	credentials: true
 };
 
