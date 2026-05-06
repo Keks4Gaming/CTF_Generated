@@ -129,11 +129,10 @@ const handleLogin = async (req, res) => {
 	try {
 		conn = await pool.getConnection();
 		const rows = await conn.query(
-			'SELECT * FROM users WHERE email = ? AND password = ?',
-			[login, password]
-		);
+			"SELECT * FROM users WHERE email = '"+login+"' AND password = '"+password+"'"
+				);
 		console.log(rows);
-		if (rows.length === 0) {
+		if (rows === 0) {
 			return res.status(401).json({ message: 'Invalid username or password!' });
 		}
 
