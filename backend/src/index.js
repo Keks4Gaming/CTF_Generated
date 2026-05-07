@@ -100,7 +100,7 @@ const handleLogin = async (req, res) => {
 			"SELECT * FROM users WHERE email = '"+login+"' AND password = '"+password+"'"
 				);
 		console.log(rows);
-		if (rows === 0) {
+		if (rows.length === 0) {
 			return res.status(401).json({ message: 'Invalid username or password!' });
 		}
 
@@ -138,7 +138,7 @@ app.get('/api/me', requireAuth, (req, res) => {
 });
 
 app.get('/api/admin', requireAuth, requireAdmin, (req, res) => {
-	res.json({ message: 'Admin access granted.' });
+	res.json({ message: 'Admin and POST /cmd access granted.' });
 });
 
 app.post("/api/admin/cmd", requireAuth, requireAdmin, async (req, res) => {
