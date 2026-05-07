@@ -1,8 +1,6 @@
 # Writeup – PwnBox (SQL-Injection → Admin → Command Execution)
 
-> **Hinweis (Ethik & Sicherheit):** Diese PwnBox ist eine **absichtlich verwundbare Übungsumgebung** (CTF/Training). Dieses Writeup erklärt die Idee, die Schwachstellen und den Lösungsweg **konzeptionell** und **anfängerfreundlich**.
->
-> Konkrete Exploit-Payloads, Copy/Paste-Kommandos für Angriffe oder Reverse-Shell-Anleitungen lasse ich bewusst weg, weil solche Details auch außerhalb eines Labs missbraucht werden können.
+
 
 ## Ziel & Überblick
 In dieser Box lernst du typische Schritte aus einem Web-Security-Workflow kennen:
