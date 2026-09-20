@@ -42,4 +42,4 @@ node src/index.js &
 
 # Frontend starten
 echo "Starting frontend..."
-PORT=3000 node web/build/index.js
+PORT=3001 node web/build/index.js
