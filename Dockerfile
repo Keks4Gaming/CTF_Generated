@@ -49,7 +49,7 @@ COPY users.sql /docker-entrypoint-initdb.d/users.sql
 COPY start.sh ./
 RUN chmod +x start.sh
 
-EXPOSE 3000
+EXPOSE 3001
 EXPOSE 7401
 
 ENV NODE_ENV=production
